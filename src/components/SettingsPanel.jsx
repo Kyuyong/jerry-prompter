@@ -3,6 +3,16 @@ import useStore from '../store/useStore'
 const BG_PRESETS = ['#000000', '#ffffff', '#1a1a2e', '#2d2d2d']
 const TEXT_PRESETS = ['#ffffff', '#000000', '#ffff00', '#00ff88']
 
+const BT_KEYS = [
+  ['Space / Enter', '재생 / 정지'],
+  ['↑ (ArrowUp)', '속도 올리기'],
+  ['↓ (ArrowDown)', '속도 내리기'],
+  ['← (ArrowLeft)', '위로 이동'],
+  ['→ (ArrowRight)', '아래로 이동'],
+  ['Home', '처음으로'],
+  ['End', '끝으로'],
+]
+
 function Slider({ label, value, min, max, step = 1, onChange, display }) {
   return (
     <div className="flex items-center gap-3">
@@ -54,28 +64,73 @@ export default function SettingsPanel({ onClose }) {
 
   const set = (key) => (val) => updateSettings({ [key]: val })
 
+  const displaySpeed = Number.isInteger(settings.scrollSpeed)
+    ? settings.scrollSpeed
+    : settings.scrollSpeed.toFixed(1)
+
   return (
     <div className="fixed inset-0 z-30 flex flex-col justify-end" onClick={onClose}>
       <div
-        className="bg-gray-900 rounded-t-2xl p-5 pb-8 space-y-4"
+        className="bg-gray-900 rounded-t-2xl p-5 space-y-4 overflow-y-auto max-h-[85vh]"
+        style={{ paddingBottom: 'max(20px, env(safe-area-inset-bottom))' }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center justify-between">
           <span className="text-white font-semibold">설정</span>
           <button onClick={onClose} className="text-white/50 text-2xl leading-none">
             ×
           </button>
         </div>
 
-        <Slider label="글자 크기" value={settings.fontSize} min={16} max={80} onChange={set('fontSize')} display={`${settings.fontSize}px`} />
-        <Slider label="좌우 마진" value={settings.margin} min={0} max={120} onChange={set('margin')} display={`${settings.margin}px`} />
-        <Slider label="줄 간격" value={settings.lineHeight} min={1.2} max={2.5} step={0.1} onChange={set('lineHeight')} display={settings.lineHeight.toFixed(1)} />
-        <Slider label="스크롤 속도" value={settings.scrollSpeed} min={1} max={10} onChange={set('scrollSpeed')} />
+        <Slider
+          label="글자 크기"
+          value={settings.fontSize}
+          min={16}
+          max={80}
+          onChange={set('fontSize')}
+          display={`${settings.fontSize}px`}
+        />
+        <Slider
+          label="좌우 마진"
+          value={settings.margin}
+          min={0}
+          max={120}
+          onChange={set('margin')}
+          display={`${settings.margin}px`}
+        />
+        <Slider
+          label="줄 간격"
+          value={settings.lineHeight}
+          min={1.2}
+          max={2.5}
+          step={0.1}
+          onChange={set('lineHeight')}
+          display={settings.lineHeight.toFixed(1)}
+        />
+        <Slider
+          label="스크롤 속도"
+          value={settings.scrollSpeed}
+          min={0.5}
+          max={10}
+          step={0.5}
+          onChange={set('scrollSpeed')}
+          display={displaySpeed}
+        />
 
-        <ColorRow label="배경색" value={settings.bgColor} presets={BG_PRESETS} onChange={set('bgColor')} />
-        <ColorRow label="텍스트색" value={settings.textColor} presets={TEXT_PRESETS} onChange={set('textColor')} />
+        <ColorRow
+          label="배경색"
+          value={settings.bgColor}
+          presets={BG_PRESETS}
+          onChange={set('bgColor')}
+        />
+        <ColorRow
+          label="텍스트색"
+          value={settings.textColor}
+          presets={TEXT_PRESETS}
+          onChange={set('textColor')}
+        />
 
-        <div className="flex gap-3 pt-1">
+        <div className="flex gap-3">
           <button
             onClick={() => updateSettings({ flipH: !settings.flipH })}
             className={`flex-1 py-2 rounded-lg text-sm font-medium border transition-colors ${
@@ -96,6 +151,21 @@ export default function SettingsPanel({ onClose }) {
           >
             ↕ 상하 반전
           </button>
+        </div>
+
+        {/* 블루투스 리모콘 키 매핑 */}
+        <div className="border-t border-white/10 pt-4">
+          <p className="text-white/50 text-xs mb-3">블루투스 리모콘 키 매핑</p>
+          <div className="space-y-1.5">
+            {BT_KEYS.map(([key, action]) => (
+              <div key={key} className="flex justify-between items-center">
+                <span className="text-white/40 text-xs font-mono bg-white/5 px-2 py-0.5 rounded">
+                  {key}
+                </span>
+                <span className="text-white/60 text-xs">{action}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

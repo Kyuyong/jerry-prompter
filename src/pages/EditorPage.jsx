@@ -20,7 +20,7 @@ export default function EditorPage() {
   return (
     <div className="fixed inset-0 bg-gray-950 flex flex-col">
       {/* Header */}
-      <div className="px-4 pt-safe pt-4 pb-3 border-b border-gray-800">
+      <div className="px-4 pb-3 border-b border-gray-800" style={{ paddingTop: 'max(16px, env(safe-area-inset-top))' }}>
         <h1 className="text-white font-bold text-lg mb-3">Jerry Prompter</h1>
         <ScriptList />
       </div>
@@ -55,7 +55,7 @@ export default function EditorPage() {
       )}
 
       {/* Bottom bar */}
-      <div className="px-4 pb-safe pb-6 pt-3 flex gap-3 border-t border-gray-800">
+      <div className="px-4 pt-3 flex gap-3 border-t border-gray-800" style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom))' }}>
         <button
           onClick={startPrompter}
           disabled={!active?.content}

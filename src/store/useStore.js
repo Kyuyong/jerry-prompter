@@ -10,7 +10,7 @@ const useStore = create(
         fontSize: 36,
         margin: 40,
         lineHeight: 1.8,
-        scrollSpeed: 3,
+        scrollSpeed: 2,
         bgColor: '#000000',
         textColor: '#ffffff',
         flipH: false,

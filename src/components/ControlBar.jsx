@@ -9,11 +9,17 @@ export default function ControlBar({ onSettingsToggle }) {
   const updateSettings = useStore((state) => state.updateSettings)
 
   const changeSpeed = (delta) => {
-    updateSettings({ scrollSpeed: Math.min(10, Math.max(1, scrollSpeed + delta)) })
+    const next = Math.round((scrollSpeed + delta) * 10) / 10
+    updateSettings({ scrollSpeed: Math.min(10, Math.max(0.5, next)) })
   }
 
+  const displaySpeed = Number.isInteger(scrollSpeed) ? scrollSpeed : scrollSpeed.toFixed(1)
+
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-20 flex items-center justify-between px-4 py-3 bg-black/80 backdrop-blur-sm">
+    <div
+      className="fixed bottom-0 left-0 right-0 z-20 flex items-center justify-between px-4 pt-3 bg-black/80 backdrop-blur-sm"
+      style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
+    >
       <button
         onClick={() => navigate('/')}
         className="text-white/70 text-sm px-3 py-1.5 rounded-lg border border-white/20 active:bg-white/10"
@@ -23,14 +29,14 @@ export default function ControlBar({ onSettingsToggle }) {
 
       <div className="flex items-center gap-3">
         <button
-          onClick={() => changeSpeed(-1)}
+          onClick={() => changeSpeed(-0.5)}
           className="w-8 h-8 flex items-center justify-center text-white/70 text-xl rounded-full border border-white/20 active:bg-white/10"
         >
           −
         </button>
-        <span className="text-white text-sm w-6 text-center">{scrollSpeed}</span>
+        <span className="text-white text-sm w-8 text-center">{displaySpeed}</span>
         <button
-          onClick={() => changeSpeed(1)}
+          onClick={() => changeSpeed(0.5)}
           className="w-8 h-8 flex items-center justify-center text-white/70 text-xl rounded-full border border-white/20 active:bg-white/10"
         >
           +
@@ -47,6 +53,7 @@ export default function ControlBar({ onSettingsToggle }) {
       <button
         onClick={onSettingsToggle}
         className="text-white/70 text-xl px-3 py-1.5 rounded-lg border border-white/20 active:bg-white/10"
+        aria-label="설정 열기"
       >
         ⚙
       </button>

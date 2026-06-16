@@ -23,7 +23,7 @@ export function useScroll(containerRef) {
       const delta = timestamp - lastTimeRef.current
       lastTimeRef.current = timestamp
 
-      const pixelsPerSecond = speedRef.current * 20
+      const pixelsPerSecond = speedRef.current * 8
       containerRef.current.scrollTop += (pixelsPerSecond * delta) / 1000
 
       rafRef.current = requestAnimationFrame(tick)
