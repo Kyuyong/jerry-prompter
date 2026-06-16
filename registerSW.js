@@ -1,1 +1,0 @@
-if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/jerry-prompter/sw.js', { scope: '/jerry-prompter/' })})}
