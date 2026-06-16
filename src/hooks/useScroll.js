@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef } from 'react'
 import useStore from '../store/useStore'
 
 export function useScroll(containerRef) {
@@ -6,54 +6,55 @@ export function useScroll(containerRef) {
   const scrollSpeed = useStore((state) => state.settings.scrollSpeed)
   const setPlaying = useStore((state) => state.setPlaying)
 
-  const rafRef = useRef(null)
-  const lastTimeRef = useRef(null)
   const speedRef = useRef(scrollSpeed)
   const wasPlayingRef = useRef(false)
+  const isPlayingRef = useRef(isPlaying)
 
   useEffect(() => {
     speedRef.current = scrollSpeed
   }, [scrollSpeed])
 
-  const tick = useCallback(
-    (timestamp) => {
-      if (!containerRef.current) return
-      if (!lastTimeRef.current) lastTimeRef.current = timestamp
-
-      const delta = timestamp - lastTimeRef.current
-      lastTimeRef.current = timestamp
-
-      const pixelsPerSecond = speedRef.current * 8
-      containerRef.current.scrollTop += (pixelsPerSecond * delta) / 1000
-
-      rafRef.current = requestAnimationFrame(tick)
-    },
-    [containerRef],
-  )
+  useEffect(() => {
+    isPlayingRef.current = isPlaying
+  }, [isPlaying])
 
   useEffect(() => {
-    if (isPlaying) {
-      lastTimeRef.current = null
-      rafRef.current = requestAnimationFrame(tick)
-    } else {
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current)
-        rafRef.current = null
+    if (!isPlaying) return
+
+    const el = containerRef.current
+    if (!el) return
+
+    let rafId = null
+    let lastTime = null
+
+    // tick은 effect 내부에 정의 — self-reference 클로저 문제 없음
+    const tick = (timestamp) => {
+      if (lastTime === null) {
+        lastTime = timestamp
+        rafId = requestAnimationFrame(tick)
+        return
       }
+      const delta = timestamp - lastTime
+      lastTime = timestamp
+      el.scrollTop += (speedRef.current * 12 * delta) / 1000
+      rafId = requestAnimationFrame(tick)
     }
+
+    rafId = requestAnimationFrame(tick)
+
     return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      if (rafId !== null) cancelAnimationFrame(rafId)
     }
-  }, [isPlaying, tick])
+  }, [isPlaying, containerRef])
 
-  const handleTouchStart = useCallback(() => {
-    wasPlayingRef.current = isPlaying
-    if (isPlaying) setPlaying(false)
-  }, [isPlaying, setPlaying])
+  const handleTouchStart = () => {
+    wasPlayingRef.current = isPlayingRef.current
+    if (isPlayingRef.current) setPlaying(false)
+  }
 
-  const handleTouchEnd = useCallback(() => {
+  const handleTouchEnd = () => {
     if (wasPlayingRef.current) setPlaying(true)
-  }, [setPlaying])
+  }
 
   return { handleTouchStart, handleTouchEnd }
 }

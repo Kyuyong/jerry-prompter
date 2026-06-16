@@ -21,7 +21,12 @@ export default function EditorPage() {
     <div className="fixed inset-0 bg-gray-950 flex flex-col">
       {/* Header */}
       <div className="px-4 pb-3 border-b border-gray-800" style={{ paddingTop: 'max(16px, env(safe-area-inset-top))' }}>
-        <h1 className="text-white font-bold text-lg mb-3">Jerry Prompter</h1>
+        <h1 className="text-white font-bold text-lg mb-3">
+          Jerry Prompter{' '}
+          <span className="text-white/40 text-xs font-normal align-middle">
+            v{__APP_VERSION__}
+          </span>
+        </h1>
         <ScriptList />
       </div>
 
