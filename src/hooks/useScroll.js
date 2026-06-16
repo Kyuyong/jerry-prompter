@@ -26,8 +26,8 @@ export function useScroll(containerRef) {
 
     let rafId = null
     let lastTime = null
+    let accumulated = 0 // 소수점 픽셀 누산 — Android scrollTop 정수 내림 문제 해결
 
-    // tick은 effect 내부에 정의 — self-reference 클로저 문제 없음
     const tick = (timestamp) => {
       if (lastTime === null) {
         lastTime = timestamp
@@ -36,7 +36,14 @@ export function useScroll(containerRef) {
       }
       const delta = timestamp - lastTime
       lastTime = timestamp
-      el.scrollTop += (speedRef.current * 12 * delta) / 1000
+
+      accumulated += (speedRef.current * 12 * delta) / 1000
+      const pixels = Math.floor(accumulated)
+      if (pixels > 0) {
+        el.scrollTop += pixels
+        accumulated -= pixels
+      }
+
       rafId = requestAnimationFrame(tick)
     }
 
